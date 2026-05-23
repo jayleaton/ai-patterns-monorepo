@@ -1,11 +1,23 @@
-const { FlatCompat } = require('@eslint/eslintrc')
+const path = require('path')
+const { createRequire } = require('module')
 
-const compat = new FlatCompat({
-  baseDirectory: __dirname,
-})
+const webAppRequire = createRequire(
+  path.join(__dirname, 'apps/web-app/package.json')
+)
+const nextCoreWebVitals = webAppRequire('eslint-config-next/core-web-vitals')
+const nextTypescript = webAppRequire('eslint-config-next/typescript')
 
 module.exports = [
-  ...compat.extends('next/core-web-vitals', 'next/typescript'),
+  {
+    ignores: [
+      '**/.next/**',
+      '**/dist/**',
+      '**/node_modules/**',
+      '**/coverage/**',
+    ],
+  },
+  ...nextCoreWebVitals,
+  ...nextTypescript,
   {
     rules: {
       '@typescript-eslint/no-unused-vars': 'warn',

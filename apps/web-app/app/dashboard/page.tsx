@@ -11,7 +11,7 @@ export default async function DashboardPage() {
     id: session.user.id,
     name: session.user.name,
     email: session.user.email,
-    createdAt: new Date(session.user.createdAt ?? Date.now()).toISOString(),
+    createdAt: new Date(session.user.createdAt ?? 0).toISOString(),
   }
 
   return (

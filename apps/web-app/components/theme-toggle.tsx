@@ -21,6 +21,8 @@ export default function ThemeToggle() {
     const nextDark = stored ? stored === 'dark' : systemPrefersDark
 
     root.classList.toggle('dark', nextDark)
+    // Hydration guard: client-only theme state depends on localStorage/media.
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     setIsDark(nextDark)
     setMounted(true)
   }, [])
