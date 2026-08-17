@@ -14,9 +14,10 @@ const getDatabaseUrl = () => {
   return url
 }
 
-const sql = postgres(getDatabaseUrl(), {
-  ssl: process.env.NODE_ENV === 'production' ? 'require' : false,
-})
+// TLS is controlled by the connection string itself: hosted Postgres URLs
+// carry `?sslmode=require`, local Docker stays plain. Never infer TLS from
+// NODE_ENV — that breaks production builds against local databases.
+const sql = postgres(getDatabaseUrl())
 
 // Connect to Postgres (server-only)
 export const db = drizzle(sql)

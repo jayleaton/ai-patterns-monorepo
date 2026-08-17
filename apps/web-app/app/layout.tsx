@@ -49,8 +49,8 @@ export default async function RootLayout({
       <body className={`${inter.variable} bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100`}>
         <NextIntlClientProvider messages={messages}> {/* REMOVABLE_FEATURE: Internationalization */}
           <div className='relative min-h-screen'>
-            <header className='absolute top-4 right-4 z-50'>
-              <nav aria-label="Global" className='flex items-center gap-2'>
+            <header className='sticky top-0 z-50 border-b border-neutral-200/80 bg-white/80 backdrop-blur-md dark:border-neutral-800/80 dark:bg-neutral-950/80'>
+              <nav aria-label="Global" className='mx-auto flex max-w-3xl items-center justify-end gap-2 px-4 py-3 md:px-6'>
                 <LogoutButton />
                 <ThemeToggle />
                 <LanguageSelector /> {/* REMOVABLE_FEATURE: Internationalization */}

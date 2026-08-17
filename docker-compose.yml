@@ -9,7 +9,7 @@ services:
       POSTGRES_USER: postgres
       POSTGRES_PASSWORD: postgres
     ports:
-      - '5432:5432'
+      - '0.0.0.0:${POSTGRES_PORT:-5432}:5432'
     volumes:
       - postgres_data:/var/lib/postgresql/data
     healthcheck:
@@ -24,7 +24,7 @@ services:
     container_name: better-stack-pgweb
     restart: unless-stopped
     ports:
-      - '5050:8081'
+      - '0.0.0.0:${PGWEB_PORT:-5050}:8081'
     depends_on:
       postgres:
         condition: service_healthy

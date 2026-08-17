@@ -2,12 +2,21 @@ import { account, session, user, verification } from '@better-stack-monorepo/dat
 import { db } from '@better-stack-monorepo/database/src/database'
 import { env } from '@/lib/env'
 import { FeatureConfig } from '@/lib/config/featureToggles'
+import { getAuthAllowedHosts } from '@/lib/config/networkAccess'
 import { EmailService } from '@/lib/resend/email-service'
 import { betterAuth } from 'better-auth'
 import { drizzleAdapter } from 'better-auth/adapters/drizzle'
+import { expo } from '@better-auth/expo'
 import { Resend } from 'resend'
 
 const emailService = new EmailService(new Resend(env.RESEND_API_KEY))
+
+// Deep-link origins for the mobile app (apps/mobile-app). The scheme must
+// match app.json there; Expo dev builds use exp:// URLs with device IPs.
+const mobileTrustedOrigins = ['betterstack://']
+if (process.env.NODE_ENV !== 'production') {
+  mobileTrustedOrigins.push('exp://**', 'exp+go://**')
+}
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -20,7 +29,16 @@ export const auth = betterAuth({
     },
   }),
   secret: env.AUTH_SECRET,
-  baseURL: env.NEXT_PUBLIC_URL,
+  plugins: [expo()],
+  trustedOrigins: mobileTrustedOrigins,
+  baseURL:
+    env.NODE_ENV === 'production'
+      ? env.NEXT_PUBLIC_URL
+      : {
+          allowedHosts: getAuthAllowedHosts(),
+          protocol: 'auto' as const,
+          fallback: env.NEXT_PUBLIC_URL,
+        },
   emailAndPassword: {
     enabled: true,
     requireEmailVerification: FeatureConfig.features.emailVerification,

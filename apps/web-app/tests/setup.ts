@@ -4,13 +4,13 @@ import { beforeEach, vi } from 'vitest'
 vi.mock('server-only', () => ({}))
 
 // Mock the database connection
-vi.mock('@proxy-fam/database/src/database', () => ({
+vi.mock('@better-stack-monorepo/database/src/database', () => ({
   db: vi.fn(),
 }))
 
 // Mock the repository functions
-vi.mock('@proxy-fam/database/src/repositories/allowListRepository', () => ({
-  createAllowListRepository: vi.fn(),
+vi.mock('@better-stack-monorepo/database/src/repositories/userRepository', () => ({
+  createUserRepository: vi.fn(),
 }))
 
 // Mock environment variables
@@ -19,7 +19,7 @@ process.env.DATABASE_URL = 'postgresql://test:test@localhost:5432/test'
 // Mock crypto for Node.js test environment
 Object.defineProperty(global, 'crypto', {
   value: {
-    randomUUID: () => 'test-uuid-' + Math.random().toString(36).substr(2, 9),
+    randomUUID: () => `test-uuid-${Math.random().toString(36).slice(2, 11)}`,
   },
 })
 

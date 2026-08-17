@@ -1,5 +1,5 @@
 import { env } from '@/lib/env'
-import { render } from '@react-email/render'
+import { render } from 'react-email'
 import { Resend } from 'resend'
 import 'server-only'
 import EmailVerification from './templates/email-verification'

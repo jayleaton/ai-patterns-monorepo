@@ -1,6 +1,39 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useCallback, useSyncExternalStore } from 'react'
+
+const THEME_KEY = 'theme'
+const THEME_EVENT = 'theme-change'
+
+function getTheme(): boolean {
+  const stored = localStorage.getItem(THEME_KEY)
+  if (stored === 'dark') return true
+  if (stored === 'light') return false
+  return window.matchMedia('(prefers-color-scheme: dark)').matches
+}
+
+function applyTheme(dark: boolean) {
+  document.documentElement.classList.toggle('dark', dark)
+}
+
+function subscribe(onStoreChange: () => void) {
+  const media = window.matchMedia('(prefers-color-scheme: dark)')
+  const onChange = () => {
+    applyTheme(getTheme())
+    onStoreChange()
+  }
+
+  applyTheme(getTheme())
+  media.addEventListener('change', onChange)
+  window.addEventListener('storage', onChange)
+  window.addEventListener(THEME_EVENT, onChange)
+
+  return () => {
+    media.removeEventListener('change', onChange)
+    window.removeEventListener('storage', onChange)
+    window.removeEventListener(THEME_EVENT, onChange)
+  }
+}
 
 /**
  * Tailwind v4 class-based dark mode toggle.
@@ -9,36 +42,25 @@ import { useEffect, useState } from 'react'
  * - Respects system preference when no stored value
  */
 export default function ThemeToggle() {
-  const [mounted, setMounted] = useState(false)
-  const [isDark, setIsDark] = useState(false)
+  const mounted = useSyncExternalStore(
+    () => () => {},
+    () => true,
+    () => false
+  )
+  const isDark = useSyncExternalStore(subscribe, getTheme, () => false)
 
-  useEffect(() => {
-    const root = document.documentElement
-    root.classList.remove('dark')
-
-    const stored = typeof window !== 'undefined' ? localStorage.getItem('theme') : null
-    const systemPrefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches
-    const nextDark = stored ? stored === 'dark' : systemPrefersDark
-
-    root.classList.toggle('dark', nextDark)
-    setIsDark(nextDark)
-    setMounted(true)
+  const toggle = useCallback(() => {
+    const next = !getTheme()
+    localStorage.setItem(THEME_KEY, next ? 'dark' : 'light')
+    applyTheme(next)
+    window.dispatchEvent(new Event(THEME_EVENT))
   }, [])
 
-  const toggle = () => {
-    const root = document.documentElement
-    const next = !isDark
-    setIsDark(next)
-    root.classList.toggle('dark', next)
-    localStorage.setItem('theme', next ? 'dark' : 'light')
-  }
-
-  // Placeholder to avoid hydration mismatch
   if (!mounted) {
     return (
       <button
         aria-label="Toggle theme"
-        className="h-9 w-9 rounded-md border border-neutral-200 bg-white text-neutral-700 shadow-sm hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-200"
+        className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-800 shadow-sm hover:bg-neutral-50 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
       />
     )
   }
@@ -47,11 +69,10 @@ export default function ThemeToggle() {
     <button
       onClick={toggle}
       aria-label="Toggle theme"
-      className="h-9 w-9 rounded-md border border-neutral-200 bg-white text-neutral-700 shadow-sm hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-200"
+      className="inline-flex h-9 w-9 items-center justify-center rounded-md border border-neutral-200 bg-white text-neutral-800 shadow-sm hover:bg-neutral-50 focus:outline-none focus-visible:ring-2 focus-visible:ring-neutral-400 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-100 dark:hover:bg-neutral-800"
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       data-theme-state={isDark ? 'dark' : 'light'}
     >
-      {/* Sun / Moon icons */}
       {isDark ? (
         <svg className="mx-auto h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
           <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z" />

@@ -1,25 +1,27 @@
-import { env } from '@/lib/env'
-
 type FeatureToggles = {
   features: {
     emailVerification: boolean
+    /** Starter welcome page. Set false, then delete apps/web-app/template-welcome. */
+    templateWelcome: boolean
   }
 }
 
 const ProdFeatureToggles: FeatureToggles = {
   features: {
     emailVerification: true,
+    templateWelcome: true,
   },
 }
 
 const DevFeatureToggles: FeatureToggles = {
   features: {
     emailVerification: false,
+    templateWelcome: true,
   },
 }
 
 export const FeatureConfig: FeatureToggles = (() => {
-  if (env.NODE_ENV === 'production') {
+  if (process.env.NODE_ENV === 'production') {
     return ProdFeatureToggles
   }
   return DevFeatureToggles
@@ -33,6 +35,7 @@ export const AppRoutes = {
   login: '/login',
   signup: '/signup',
   dashboard: '/dashboard',
+  why: '/why',
 }
 
 /**
