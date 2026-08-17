@@ -1,20 +1,11 @@
 'use client'
 
-import { env } from '@/lib/env'
 import { createAuthClient } from 'better-auth/react'
 
 export const authClient = createAuthClient({
-  baseURL: env.NEXT_PUBLIC_URL,
-  // Configure client to work with JWT tokens
-  session: {
-    cookieCache: {
-      enabled: true,
-      maxAge: 60 * 5, // 5 minutes cache
-    },
-  },
-  emailAndPassword: {
-    enabled: true,
-  },
+  // Current page origin so Tailscale / LAN hosts work without extra config.
+  // Session cookie caching and email/password are configured server-side
+  // in lib/auth/auth.ts; the client needs no extra options here.
 })
 
 export const { signIn, signUp, signOut, useSession } = authClient

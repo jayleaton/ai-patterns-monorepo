@@ -9,20 +9,20 @@
     "db:generate": "drizzle-kit generate",
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
-    "db:studio": "drizzle-kit studio"
+    "db:studio": "drizzle-kit studio --host 0.0.0.0 --port 4983"
   },
   "dependencies": {
     "@better-stack-monorepo/common": "workspace:*",
-    "drizzle-orm": "^0.44.2",
-    "postgres": "^3.4.7"
+    "drizzle-orm": "^0.45.2",
+    "postgres": "^3.4.9"
   },
   "devDependencies": {
-    "@types/node": "^24.0.0",
-    "dotenv": "^17.2.0",
-    "drizzle-kit": "^0.31.4",
+    "@types/node": "^24.13.3",
+    "dotenv": "^17.4.2",
+    "drizzle-kit": "^0.31.10",
     "server-only": "^0.0.1",
-    "tsx": "^4.7.1",
-    "typescript": "^5.0.0"
+    "tsx": "^4.23.12",
+    "typescript": "^5.9.3"
   },
   "files": [
     "src/**/*",

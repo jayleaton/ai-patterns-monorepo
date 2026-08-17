@@ -23,7 +23,7 @@ PreSteps:
 - Resend is a great email provider (Tip: If you have multiple projects you can get free accounts with a single email if you use gmail
  with `email_name+project_name@provider_name.com`) Email verification is disabled locally via `featureToggles.ts`
 
-1. Add your intro paragraph to the Claude/Cursor files
+1. Add your intro paragraph to the root `AGENTS.md` and `CLAUDE.md` files
 2. Have Claude-Code setup everything else based on this readme, ai files and project structure
 3. Ensure you have setup providers and `.env` variables
 4. Ensure you have setup github secrets if you are using the .github workflows
@@ -175,7 +175,7 @@ pnpm db:migrate
 pnpm run dev
 ```
 
-- Web app: http://localhost:3000
+- Web app: http://localhost:3000 (also reachable on your Tailscale hostname/IP; the dev server binds `0.0.0.0`)
 - Postgres: localhost:5432
 - PGWeb (DB UI): http://localhost:5050
 
@@ -211,6 +211,9 @@ Useful filters:
 ```bash
 pnpm --filter web-app dev
 pnpm --filter web-app build
+
+# Expo mobile app (start the web app first — it's the API)
+pnpm mobile:dev
 ```
 
 Database tools (via workspace scripts):
@@ -240,7 +243,8 @@ For Docker Compose, you can create `.env.docker` if needed to override additiona
 ```
 better-stack-monorepo/
 ├── apps/
-│   └── web-app/         # Next.js application
+│   ├── web-app/         # Next.js application
+│   └── mobile-app/      # Expo (React Native) app — authenticates against web-app's API
 ├── packages/
 │   ├── common/               # Shared utilities and types
 │   └── database/            # Database schemas and repositories

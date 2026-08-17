@@ -8,7 +8,8 @@ export default defineConfig({
   test: {
     environment: 'node',
     globals: true,
-    setupFiles: ['./apps/web-dashboard/tests/setup.ts'],
+    passWithNoTests: true,
+    setupFiles: ['./apps/web-app/tests/setup.ts'],
     include: [
       'apps/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}',
       'packages/**/*.{test,spec}.{js,mjs,cjs,ts,mts,cts,jsx,tsx}'
@@ -18,13 +19,17 @@ export default defineConfig({
       '**/dist/**',
       '**/.{idea,git,cache,output,temp}/**',
       '**/{karma,rollup,webpack,vite,vitest,jest,ava,babel,nyc,cypress,tsup,build}.config.*',
+      '**/.next/**', // Build output copies sources; without this, tests run twice
+      '**/.expo/**',
       '**/app/**', // Exclude Next.js app directory from tests
       '**/components/**', // Exclude React components from unit tests
     ],
   },
   resolve: {
     alias: {
-      '@': __dirname,
+      // `@` means apps/web-app, matching its tsconfig paths. The mobile app
+      // maps `@` to its own src/, so mobile tests use relative imports.
+      '@': path.resolve(__dirname, 'apps/web-app'),
     },
   },
   esbuild: {

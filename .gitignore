@@ -44,3 +44,6 @@ dist/
 
 .assay-assessment/
 .assay
+
+# Agent tooling scratch (browser snapshots, console logs)
+.playwright-cli/

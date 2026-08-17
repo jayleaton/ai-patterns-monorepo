@@ -21,8 +21,8 @@ export default function ForgotPasswordClient() {
     setMessage('')
 
     try {
-      // Use Better Auth's forget password functionality
-      const result = await authClient.forgetPassword({
+      // Use Better Auth's password reset request
+      const result = await authClient.requestPasswordReset({
         email,
         redirectTo: `${window.location.origin}/auth/reset-password`,
       })

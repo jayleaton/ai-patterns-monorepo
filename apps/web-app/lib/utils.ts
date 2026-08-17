@@ -14,9 +14,10 @@ export const timeAgo = (timestamp: Date, timeOnly?: boolean): string => {
 }
 
 export function getBaseUrl() {
-  // Prefer INTERNAL_URL on the server (e.g., inside Docker), fall back to NEXT_PUBLIC_URL
-  if (typeof window === 'undefined') {
-    return process.env.INTERNAL_URL || env.NEXT_PUBLIC_URL
+  if (typeof window !== 'undefined') {
+    return window.location.origin
   }
-  return env.NEXT_PUBLIC_URL
+
+  // Prefer INTERNAL_URL on the server (e.g., inside Docker), fall back to NEXT_PUBLIC_URL
+  return process.env.INTERNAL_URL || env.NEXT_PUBLIC_URL
 }
