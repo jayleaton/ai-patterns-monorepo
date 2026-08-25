@@ -1,6 +1,7 @@
 import { createRouteHandler } from '@/lib/auth/route-handler'
 import { NextResponse } from 'next/server'
-import { updateUserSettingsSchema, createUserService } from '@/lib/services/userService'
+import { createUserService } from '@/lib/services/userService'
+import { updateUserSettingsSchema } from '@/lib/validators/userSchemas'
 
 export const GET = createRouteHandler({ isAuthenticated: true }, async req => {
   // The authenticated user sent via secureFetch()

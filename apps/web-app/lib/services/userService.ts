@@ -1,27 +1,17 @@
-import "server-only"
+import 'server-only'
 
-import { UserRepository } from "@better-stack-monorepo/database/src/repositories/userRepository"
-import { db } from "@better-stack-monorepo/database/src/database"
-import { ServiceContext } from "@/lib/types"
-import { z } from "zod"
-
-// Validation schema for user settings update
-export const updateUserSettingsSchema = z.object({
-  name: z.string().min(1).max(255).optional(),
-  email: z.string().email().optional(),
-  image: z.string().url().optional().nullable(),
-})
-
-export type UpdateUserSettingsInput = z.infer<typeof updateUserSettingsSchema>
+import {
+  createUserRepository,
+  type UserRepository,
+} from '@better-stack-monorepo/database/src/repositories/userRepository'
+import type { ServiceContext } from '@/lib/types'
+import type { UpdateUserSettingsInput } from '@/lib/validators/userSchemas'
 
 export class UserService {
   private readonly userRepository: UserRepository
   private readonly context: ServiceContext
 
-  constructor(
-    userRepository: UserRepository,
-    context: ServiceContext
-  ) {
+  constructor(userRepository: UserRepository, context: ServiceContext) {
     this.userRepository = userRepository
     this.context = context
   }
@@ -38,7 +28,7 @@ export class UserService {
   async updateUserSettings(userId: string, data: UpdateUserSettingsInput) {
     // Ensure user can only update their own data
     if (userId !== this.context.user.id) {
-      throw new Error('Unauthorized: Cannot update another user\'s settings')
+      throw new Error("Unauthorized: Cannot update another user's settings")
     }
 
     // If email is being updated, check if it's already taken
@@ -64,7 +54,7 @@ export class UserService {
 }
 
 export const createUserService = (req: ServiceContext) => {
-  const userRepository = new UserRepository(db)
+  const userRepository = createUserRepository()
 
   return new UserService(userRepository, req)
 }

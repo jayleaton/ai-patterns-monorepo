@@ -1,12 +1,13 @@
 # Monorepo Template
 
 A production-ready monorepo template for building modern web applications with:
+
 - **Next.js App Router** with TypeScript
 - **Better-auth** for authentication
 - **Drizzle ORM** with PostgreSQL
 - **Tailwind CSS** for styling
 - **Workspace management** with pnpm
-- **I18n Translations** OPTIONAL 
+- **I18n Translations** OPTIONAL
 
 ## Overview (Simple)
 
@@ -19,9 +20,10 @@ Most template repos contain loads of crap that most people wont use and will jus
 Setting up a database provider and Email provider is required for all projects. This template runs a database locally via docker alternatively you can use a remote database but I recommend using a local database since it is free.
 
 PreSteps:
+
 - Neon or Supabase are great postgres providers
 - Resend is a great email provider (Tip: If you have multiple projects you can get free accounts with a single email if you use gmail
- with `email_name+project_name@provider_name.com`) Email verification is disabled locally via `featureToggles.ts`
+  with `email_name+project_name@provider_name.com`) Email verification is disabled locally via `featureToggles.ts`
 
 1. Add your intro paragraph to the root `AGENTS.md` and `CLAUDE.md` files
 2. Have Claude-Code setup everything else based on this readme, ai files and project structure
@@ -30,7 +32,7 @@ PreSteps:
 
 ### Production Deployments
 
-- You will need to manually setup your deployments to get this on the internet. 
+- You will need to manually setup your deployments to get this on the internet.
 
 #### Recommendations
 
@@ -52,15 +54,12 @@ This does not cover many of the other optional things you could use because not 
 - Mixpanel for advanced analytics once you have users.
 - OAuth and BetterAuth plugins.
 
-
-
-
-
-
 ## Overview (Further)
 
 ## Part 1 Services/Repositories Pattern
-Service/repository is a popular pattern both in AI coding and traditioanl coding. It shines as a core business layer for the following reasons 
+
+Service/repository is a popular pattern both in AI coding and traditioanl coding. It shines as a core business layer for the following reasons
+
 - DDD or Onion Architecture.
 - Consistently testable.
 - Easy to refactor and extend.
@@ -69,6 +68,7 @@ Service/repository is a popular pattern both in AI coding and traditioanl coding
 - Easier for AI to find references via services rather then complex API route structurues reducing context side and repetitive code.
 
 ## Part 2 Server/Client relationship
+
 Next.JS server actions were actually designed as a sort of proxy to access API layers. People have just started using them incorrectly for direct backend executions. Exposing API configuration opens not only the current route but your entire platform to direct to public API access. There are several situations where I have collected hundreds of thousands of emails or user information because of this exact thing.
 
 A simple example if I can see that `/users/1234` exists why cant I run a script that hits every single api call from 0 to 1,000,000? or some people even have routes like `/users/list` which gets me all of this data in a single API request.
@@ -76,69 +76,92 @@ A simple example if I can see that `/users/1234` exists why cant I run a script 
 Protecting our API is arguably the most important part of any project.
 
 ### Server/Client Rules
+
 - Always do data fetching on the server usually async `page.tsx` or `layout.tsx` files.
 - Never call an API route directly from the client (If you need to trigger an API route from the client use the Server Actions as they are intended)(use the `secureFetch()` & `publicFetch()` methods I have created. They cannot be imported on the client and will fail)
 - `secureFetch` requires a user session to exist
 - `publicFetch` does not require a user session
+- `pnpm lint` enforces the route → service → repository data flow as errors. Route handlers, actions, and services cannot reach into Drizzle, database schemas, or `db`.
+- Server actions cannot bypass core routes through repositories, services, auth internals, or third-party SDKs.
+- Client modules cannot import modules marked with `server-only`, and core route handlers belong under `app/(routes)/api/core/`.
 
 ### API layer wrapper function
+
 This part can be a bit hard to understand its castings so I would rather just understand how to use it rather then how it works.
 
 ### Public API routes
+
 The following code is a simple example of a public called api route
+
 - PATCH works exactly as next.js does by default
 - createRouteHander is a route specific authentication layer. This can be expanded in the future to cover things like tenant based authentication ect.
 - `{params}` & `req` work exactly the same as normal Next.js for public routes.
-````typescript
-export const PATCH = createRouteHandler({ isPublic: true }, async (req, { params }: { params: Promise<{ param: string }> }) => {
-    const { param } = await params
-    return NextResponse.json({
+
+```typescript
+export const PATCH = createRouteHandler(
+  { isPublic: true },
+  async (req, { params }: { params: Promise<{ param: string }> }) => {
+    const { param } = await params;
+    return NextResponse.json(
+      {
         data: {
-            param,
+          param,
         },
         error: null,
-    }, { status: 200 })
-})
-````
+      },
+      { status: 200 }
+    );
+  }
+);
+```
+
 see `/(routes)/api/core/v1/users/[params]` for the actual API route
 
 ### Secure API routes
+
 Secure routes work in tandem with `secureFetch()` here we dont have any params but we have an attatched user and `isAuthenticated: true` requires a user to be able to access this route.
 
-````typescript
-export const GET = createRouteHandler({ isAuthenticated: true }, async req => {
-  // The authenticated user sent via secureFetch() method in any application
-  const user = req.user
-  const session = req.session
+```typescript
+export const GET = createRouteHandler(
+  { isAuthenticated: true },
+  async (req) => {
+    // The authenticated user sent via secureFetch() method in any application
+    const user = req.user;
+    const session = req.session;
 
-  return NextResponse.json({
-    data: {
-      user: user,
-    },
-    error: null,
-  })
-})
-````
+    return NextResponse.json({
+      data: {
+        user: user,
+      },
+      error: null,
+    });
+  }
+);
+```
+
 see `/(routes)/api/core/v1/users` for the actual API route to fetch user info
 
 ### Summary of API Arcitecture
-These function exactly as normal API routes in Next.js you can do all the same things with them as normal API routes. This method of flow just adds a route based authentication layer that can be easily extended in the future. 
+
+These function exactly as normal API routes in Next.js you can do all the same things with them as normal API routes. This method of flow just adds a route based authentication layer that can be easily extended in the future.
 
 I want to emphisis the importance of layers here. Layers and patterns are repeatable and maintainable. AI is a pattern machine, the goal here is to always be moving forward quickly, these patterns allow me and my tools to move as quickly as possible.
 
 ### Summary of API Arcitecture (Technical)
+
 These are called higher order functions that take a function as an arguement. Feel free to look at how `createRouteHander` works if you want to learn more. I personally use this with tenant based architecure and pro service plans to account for things like the following example
 
 ## Putting it together
+
 See `/(routes)/api/core/v1/users` for the full backend usage example with these patterns icluded but an API route should only be around 4-5 lines of actual code always.
 
-````typescript
+```typescript
 export const PATCH = createRouteHandler({ isAuthenticated: true }, async (req, { params }: { params: Promise<{ userId: string }> }) => {
   try {
     // 1. Route segments
     const { userId } = await params
     const body = await req.json()
-    
+
     // 2. Form valiadtions
     const validatedData = updateUserSettingsSchema.parse(body)
 
@@ -153,7 +176,7 @@ export const PATCH = createRouteHandler({ isAuthenticated: true }, async (req, {
     })
   } catch (error: any) {}
 }
-````
+```
 
 ## Tech Stack
 
@@ -204,6 +227,9 @@ pnpm build
 
 # Tests
 pnpm test
+
+# Architecture and code-quality checks
+pnpm lint
 ```
 
 Useful filters:
