@@ -1,6 +1,7 @@
 import { createRouteHandler } from '@/lib/auth/route-handler'
 import { NextResponse } from 'next/server'
-import { updateUserSettingsSchema, createUserService } from '@/lib/services/userService'
+import { createUserService } from '@/lib/services/userService'
+import { updateUserSettingsSchema } from '@/lib/validators/userSchemas'
 
 export const PATCH = createRouteHandler(
   { isAuthenticated: true },
@@ -11,7 +12,10 @@ export const PATCH = createRouteHandler(
       const validatedData = updateUserSettingsSchema.parse(body)
 
       const userService = createUserService(req)
-      const updatedUser = await userService.updateUserSettings(userId, validatedData)
+      const updatedUser = await userService.updateUserSettings(
+        userId,
+        validatedData
+      )
 
       return NextResponse.json({
         data: {
@@ -31,15 +35,24 @@ export const PATCH = createRouteHandler(
       }
 
       if (error.message === 'Email already in use') {
-        return NextResponse.json({ data: null, error: error.message }, { status: 409 })
+        return NextResponse.json(
+          { data: null, error: error.message },
+          { status: 409 }
+        )
       }
 
       if (error.message === 'User not found') {
-        return NextResponse.json({ data: null, error: error.message }, { status: 404 })
+        return NextResponse.json(
+          { data: null, error: error.message },
+          { status: 404 }
+        )
       }
 
       if (error.message.includes('Unauthorized')) {
-        return NextResponse.json({ data: null, error: error.message }, { status: 403 })
+        return NextResponse.json(
+          { data: null, error: error.message },
+          { status: 403 }
+        )
       }
 
       return NextResponse.json(

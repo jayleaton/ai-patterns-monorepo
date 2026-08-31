@@ -1,4 +1,11 @@
-import { account, session, user, verification } from '@better-stack-monorepo/database/src/schemas'
+import 'server-only'
+
+import {
+  account,
+  session,
+  user,
+  verification,
+} from '@better-stack-monorepo/database/src/schemas'
 import { db } from '@better-stack-monorepo/database/src/database'
 import { env } from '@/lib/env'
 import { FeatureConfig } from '@/lib/config/featureToggles'

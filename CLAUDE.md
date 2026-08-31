@@ -6,6 +6,10 @@ This is the **Better-Stack monorepo template**: a production-ready starting poin
 
 Guiding principle: we create modern, easy-to-use templates for better DX when creating new software projects efficiently.
 
+## Architecture is mandatory
+
+The architecture in this file is a hard constraint for every change, not optional guidance. Follow it as written. If a task would require changing, bypassing, or making an exception to the architecture, stop before editing and consult the user. Explain the conflict and proceed only after the user explicitly approves that specific deviation; never infer approval.
+
 When a developer is first defining what they are building, use the project skill `getting-started` (`.claude/skills/getting-started`, `.grok/skills/getting-started`, or `.agents/skills/getting-started` for Codex) instead of improvising a setup interview.
 
 ## What makes this template good
@@ -51,7 +55,7 @@ We need to be on the same page with terminology. When communicating, use this la
 Do not read the codebase cover to cover before starting. Long exploratory passes burn time and context without improving the change. Instead:
 
 - Let the task and the **shared terminology** above tell you which files matter. Touching a schema means `packages/database/src/schemas.ts` and its repository; touching a route means its service, validator, action, and page. That's the whole map.
-- Start from the entry points named here (`apps/web-app/package.json`, `packages/database/src/schemas.ts`, `apps/web-app/lib/config/featureToggles.ts`, `.cursor/rules/main-project-guidelines.mdc`) and only open more when the change in front of you requires it.
+- Start from the entry points named here (`apps/web-app/package.json`, `packages/database/src/schemas.ts`, `apps/web-app/lib/config/featureToggles.ts`) and only open more when the change in front of you requires it.
 - Never read `node_modules/`, `pnpm-lock.yaml`, `.next/`, or `dist/` unless absolutely required.
 - Search by symbol and pattern, not by browsing directories. One targeted lookup beats ten speculative reads.
 - If you can name the layer a change belongs to, you have done enough research to start. Course-correct when tests or the compiler say so.
@@ -73,7 +77,7 @@ The most common defect in this repo is a change that works on the path you teste
 - **Contracts.** Drizzle schemas and `packages/common` types are the contract. Change them and every consumer follows: generated migrations, repositories, services, and UI.
 - **Reverse states.** If you added a way in, add the way out and the way to see it. Delete needs restore. Disable needs enable. A one-way door is a bug.
 - **Environments.** Dev (Docker Postgres, email verification off) and production (real providers, verification on) behave differently via `featureToggles.ts` and env vars. Both paths must work.
-- **Docs.** Behavior a template user would notice belongs in the root `README.md`. Detailed patterns live in `.cursor/rules/main-project-guidelines.mdc`.
+- **Docs.** Behavior a template user would notice belongs in the root `README.md`. Repository architecture and workflow rules live in this file.
 
 ## Dev servers
 
@@ -112,7 +116,6 @@ The most common defect in this repo is a change that works on the path you teste
 - `packages/database` — Drizzle schema (`src/schemas.ts`), repositories (`src/repositories/`), migrations, and database config.
 - `packages/common` — shared config and types.
 - Repo root — `docker-compose.yml` (Postgres + pgweb), `vitest.config.mjs`, workspace scripts.
-- `.cursor/rules/main-project-guidelines.mdc` — detailed pattern rules. Prefer their patterns over invented ones.
 
 ## Taste
 

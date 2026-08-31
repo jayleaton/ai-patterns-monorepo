@@ -1,3 +1,5 @@
+import 'server-only'
+
 import { execFileSync } from 'node:child_process'
 import os from 'node:os'
 
@@ -13,7 +15,8 @@ const TAILSCALE_BINS = [
  * ("Macbook Pro (3)") and other friendly names are not, and would only ever be
  * dead entries in an allowlist.
  */
-const HOSTNAME_PATTERN = /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/
+const HOSTNAME_PATTERN =
+  /^[a-z0-9]([a-z0-9-]*[a-z0-9])?(\.[a-z0-9]([a-z0-9-]*[a-z0-9])?)*$/
 
 function addHostAliases(hosts: Set<string>, value: string) {
   const host = value.trim().replace(/\.$/, '').toLowerCase()
@@ -65,7 +68,10 @@ export function getLocalNetworkHosts(): string[] {
       // Link-local IPv6 is only routable with its zone index (`%en0`), which
       // never survives into a Host header — skip it rather than allowlist a
       // host nothing can actually connect to.
-      if (address.family === 'IPv6' && address.address.toLowerCase().startsWith('fe80:')) {
+      if (
+        address.family === 'IPv6' &&
+        address.address.toLowerCase().startsWith('fe80:')
+      ) {
         continue
       }
       const ip = address.address.split('%')[0]
