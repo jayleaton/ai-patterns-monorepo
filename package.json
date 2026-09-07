@@ -20,12 +20,12 @@
     "packages/*"
   ],
   "devDependencies": {
-    "@changesets/cli": "^3.0.0",
-    "@typescript-eslint/parser": "^8.67.0",
+    "@changesets/cli": "^3.0.2",
+    "@typescript-eslint/parser": "^8.69.0",
     "@vitest/ui": "^4.1.10",
     "eslint": "9.39.5",
     "husky": "^9.1.7",
-    "lint-staged": "^17.3.0",
+    "lint-staged": "^17.5.0",
     "prettier": "^3.9.6",
     "typescript": "^5.9.3",
     "vitest": "^4.1.10"
@@ -34,7 +34,8 @@
     "*.{js,jsx,ts,tsx,json,css,scss,md}": "prettier --write"
   },
   "engines": {
-    "node": ">=20.9.0",
-    "pnpm": ">=10.0.0"
-  }
+    "node": ">=22.13.0",
+    "pnpm": ">=10.34.5"
+  },
+  "packageManager": "pnpm@10.34.5"
 }

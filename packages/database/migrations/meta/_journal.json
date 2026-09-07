@@ -8,6 +8,13 @@
       "when": 1755408106915,
       "tag": "0000_wealthy_amphibian",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1788756763053,
+      "tag": "0001_shallow_wendell_vaughn",
+      "breakpoints": true
     }
   ]
 }

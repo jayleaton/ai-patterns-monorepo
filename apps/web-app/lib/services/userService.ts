@@ -4,6 +4,7 @@ import {
   createUserRepository,
   type UserRepository,
 } from '@better-stack-monorepo/database/src/repositories/userRepository'
+import { ServiceError } from '@/lib/services/errors'
 import type { ServiceContext } from '@/lib/types'
 import type { UpdateUserSettingsInput } from '@/lib/validators/userSchemas'
 
@@ -28,25 +29,16 @@ export class UserService {
   async updateUserSettings(userId: string, data: UpdateUserSettingsInput) {
     // Ensure user can only update their own data
     if (userId !== this.context.user.id) {
-      throw new Error("Unauthorized: Cannot update another user's settings")
-    }
-
-    // If email is being updated, check if it's already taken
-    if (data.email && data.email !== this.context.user.email) {
-      const existingUser = await this.userRepository.getUserByEmail(data.email)
-      if (existingUser) {
-        throw new Error('Email already in use')
-      }
+      throw new ServiceError(403, "Cannot update another user's settings")
     }
 
     const updatedUser = await this.userRepository.updateUser(userId, {
       name: data.name,
-      email: data.email,
-      image: data.image ?? undefined,
+      image: data.image,
     })
 
     if (!updatedUser) {
-      throw new Error('User not found')
+      throw new ServiceError(404, 'User not found')
     }
 
     return updatedUser

@@ -1,14 +1,14 @@
 // @feature:user-repository @domain:database @backend
 // @summary: User repository for user data management and deletion
 
-import "server-only"
+import 'server-only'
 
-import { db, type DB } from "../database"
-import { user } from "../schemas"
-import { eq } from "drizzle-orm"
+import { db, type DB } from '../database'
+import { user } from '../schemas'
+import { eq } from 'drizzle-orm'
 
 export class UserRepository {
-  constructor(private readonly db: DB) { }
+  constructor(private readonly db: DB) {}
 
   /**
    * Delete a user and all associated data
@@ -73,8 +73,7 @@ export class UserRepository {
     userId: string,
     data: {
       name?: string
-      email?: string
-      image?: string
+      image?: string | null
     }
   ) {
     const updateData = {

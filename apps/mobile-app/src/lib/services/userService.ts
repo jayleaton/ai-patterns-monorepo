@@ -3,7 +3,7 @@ import { ApiRoutes } from '@/lib/config/routes'
 import type { Session, User } from '@/lib/auth/authClient'
 import type { ApiResponse } from '@better-stack-monorepo/common'
 
-export type CurrentUser = { user: User; session: Session }
+export type CurrentUser = { user: User; session: Session['session'] }
 export type CurrentUserResponse = ApiResponse<CurrentUser>
 
 /**

@@ -1,3 +1,4 @@
+import { env } from '@/lib/env'
 import { Inter } from 'next/font/google'
 import './globals.css'
 import { NextIntlClientProvider } from 'next-intl'
@@ -8,7 +9,7 @@ import LogoutButton from '@/components/logout-button'
 import type { Metadata, Viewport } from 'next'
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_URL || 'http://localhost:3000'), // replace localhost with real domain when available
+  metadataBase: new URL(env.NEXT_PUBLIC_URL),
   title: {
     default: 'Better Stack',
     template: '%s — Better Stack',

@@ -12,29 +12,33 @@
     "test": "cd ../.. && vitest run apps/mobile-app"
   },
   "dependencies": {
-    "@better-auth/expo": "1.6.29",
+    "@better-auth/expo": "1.7.3",
     "@better-stack-monorepo/common": "workspace:*",
-    "better-auth": "1.6.29",
-    "expo": "~57.0.13",
-    "expo-constants": "~57.0.11",
-    "expo-linking": "~57.0.6",
+    "better-auth": "1.7.3",
+    "expo": "~57.0.20",
+    "expo-constants": "~57.0.17",
+    "expo-linking": "~57.0.9",
     "expo-network": "~57.0.1",
-    "expo-router": "~57.0.13",
-    "expo-secure-store": "~57.0.1",
-    "expo-splash-screen": "~57.0.6",
+    "expo-router": "~57.0.19",
+    "expo-secure-store": "~57.0.3",
+    "expo-splash-screen": "~57.0.8",
     "expo-status-bar": "~57.0.1",
     "expo-web-browser": "~57.0.2",
     "react": "19.2.3",
-    "react-native": "0.86.2",
+    "react-native": "0.86.3",
     "react-native-gesture-handler": "~2.32.0",
     "react-native-safe-area-context": "~5.7.0",
     "react-native-screens": "~4.26.0",
-    "zod": "^4.4.3"
+    "zod": "^4.5.4",
+    "react-dom": "19.2.3",
+    "@expo/metro-runtime": "~57.0.15",
+    "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
     "@types/react": "~19.2.2",
     "eslint": "^9.0.0",
-    "eslint-config-expo": "~57.0.1",
-    "typescript": "~6.0.3"
+    "eslint-config-expo": "~57.0.2",
+    "typescript": "~6.0.3",
+    "@react-native/metro-config": "0.86.3"
   }
 }

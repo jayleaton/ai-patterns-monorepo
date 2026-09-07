@@ -1,5 +1,21 @@
-import { describe, expect, it } from 'vitest'
+import { describe, expect, it, vi } from 'vitest'
 import { matchesHostPattern } from 'better-auth'
+
+vi.mock('node:os', () => ({
+  default: {
+    hostname: () => 'some-machine.local',
+    networkInterfaces: () => ({
+      en0: [
+        { internal: false, family: 'IPv4', address: '100.111.125.20' },
+        { internal: false, family: 'IPv4', address: '192.168.1.10' },
+      ],
+    }),
+  },
+}))
+vi.mock('node:child_process', () => ({
+  execFileSync: () =>
+    JSON.stringify({ Self: { DNSName: 'macbook.prawn-penny.ts.net' } }),
+}))
 
 import { getAllowedDevOrigins, getAuthAllowedHosts } from './networkAccess'
 
@@ -33,6 +49,9 @@ describe('getAuthAllowedHosts', () => {
     expect(allows('evil.com')).toBe(false)
     expect(allows('evil.com:3000')).toBe(false)
     expect(allows('ts.net.evil.com')).toBe(false)
+    expect(allows('100.attacker.com:3000')).toBe(false)
+    expect(allows('other.tailnet.ts.net:3000')).toBe(false)
+    expect(allows('other-machine.local:3000')).toBe(false)
   })
 
   it('emits only hosts that can appear in a Host header', () => {
@@ -67,6 +86,6 @@ describe('getAllowedDevOrigins', () => {
   it('covers loopback and Tailscale MagicDNS', () => {
     const origins = getAllowedDevOrigins()
     expect(origins).toContain('localhost')
-    expect(origins).toContain('**.ts.net')
+    expect(origins).toContain('macbook.prawn-penny.ts.net')
   })
 })

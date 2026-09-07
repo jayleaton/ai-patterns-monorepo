@@ -9,13 +9,10 @@ export const env = createEnv({
       .default('development'),
     AUTH_SECRET: z.string().min(32),
     RESEND_API_KEY: z.string().min(1),
-    FROM_EMAIL: z.string().min(1),
+    FROM_EMAIL: z.email(),
   },
   client: {
-    NEXT_PUBLIC_URL: z
-      .string()
-      .url()
-      .default('http://localhost:3000'),
+    NEXT_PUBLIC_URL: z.url(),
   },
   experimental__runtimeEnv: {
     NEXT_PUBLIC_URL: process.env.NEXT_PUBLIC_URL,

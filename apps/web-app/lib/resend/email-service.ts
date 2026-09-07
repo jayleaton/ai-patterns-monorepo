@@ -6,7 +6,7 @@ import EmailVerification from './templates/email-verification'
 import PasswordReset from './templates/password-reset'
 
 export class EmailService {
-  private readonly fromEmail = `noreply@${env.FROM_EMAIL}` // TODO: this might now work
+  private readonly fromEmail = env.FROM_EMAIL
 
   constructor(private readonly emailProvider: Resend) {}
 
@@ -32,6 +32,7 @@ export class EmailService {
         html: emailHtml,
       })
 
+      if (result.error) throw new Error('Verification email delivery failed')
       return result
     } catch (error) {
       console.error('Error sending verification email:', error)
@@ -53,11 +54,13 @@ export class EmailService {
       })
     )
 
-    return await this.emailProvider.emails.send({
+    const result = await this.emailProvider.emails.send({
       from: this.fromEmail,
       to: email,
       subject: 'Reset your password',
       html: emailHtml,
     })
+    if (result.error) throw new Error('Password reset email delivery failed')
+    return result
   }
 }
