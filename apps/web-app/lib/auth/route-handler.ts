@@ -1,6 +1,7 @@
 import 'server-only'
 import { auth, type Session, type User } from '@/lib/auth/auth'
-import { headers } from 'next/headers'
+import { ZodError } from 'zod'
+import { ServiceError } from '@/lib/services/errors'
 import { NextRequest, NextResponse } from 'next/server'
 
 // Types
@@ -26,8 +27,8 @@ type AuthorizedHandler<
 ) => Promise<NextResponse>
 
 // Helper function to get session
-async function getSession() {
-  return await auth.api.getSession({ headers: await headers() })
+async function getSession(req: NextRequest) {
+  return await auth.api.getSession({ headers: req.headers })
 }
 
 // Main route handler function overloads
@@ -49,19 +50,18 @@ export function createRouteHandler<
   T extends AppRouteHandlerFnContext = AppRouteHandlerFnContext,
 >(
   accessControlOptions:
-    | PublicAccessControlOptions
-    | AuthorizedAccessControlOptions,
+    PublicAccessControlOptions | AuthorizedAccessControlOptions,
   handler: PublicHandler<T> | AuthorizedHandler<T>
 ) {
   return async (req: NextRequest, ctx: T) => {
     try {
       // Handle public routes
       if (accessControlOptions.isPublic) {
-        return (handler as PublicHandler<T>)(req, ctx)
+        return await (handler as PublicHandler<T>)(req, ctx)
       }
 
       // Handle authenticated routes
-      const session = await getSession()
+      const session = await getSession(req)
 
       if (!session) {
         return NextResponse.json(
@@ -76,8 +76,22 @@ export function createRouteHandler<
         session: session.session,
       })
 
-      return (handler as AuthorizedHandler<T>)(enhancedReq, ctx)
+      const response = await (handler as AuthorizedHandler<T>)(enhancedReq, ctx)
+      response.headers.set('Cache-Control', 'private, no-store')
+      return response
     } catch (error) {
+      if (error instanceof ZodError || error instanceof SyntaxError) {
+        return NextResponse.json(
+          { data: null, error: 'Invalid request data' },
+          { status: 400 }
+        )
+      }
+      if (error instanceof ServiceError) {
+        return NextResponse.json(
+          { data: null, error: error.message },
+          { status: error.status }
+        )
+      }
       console.error('Route handler error:', error)
       return NextResponse.json(
         { data: null, error: 'Internal server error' },

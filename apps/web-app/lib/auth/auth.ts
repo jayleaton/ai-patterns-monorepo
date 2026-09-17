@@ -85,8 +85,8 @@ export const auth = betterAuth({
     updateAge: 60 * 60 * 24, // 1 day (every day the session will be updated)
     storeSessionInDatabase: true,
     cookieCache: {
-      enabled: true,
-      maxAge: 60 * 60 * 24 * 7, // Same as session expiry
+      // Validate against the database so revocation takes effect immediately.
+      enabled: false,
     },
   },
 })

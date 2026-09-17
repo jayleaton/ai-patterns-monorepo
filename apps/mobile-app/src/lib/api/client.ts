@@ -1,6 +1,6 @@
-import { authClient } from '@/lib/auth/authClient'
-import { ApiError, parseEnvelope } from '@/lib/api/envelope'
-import { env } from '@/lib/config/env'
+import { authClient } from '../auth/authClient'
+import { ApiError, parseEnvelope } from './envelope'
+import { env } from '../config/env'
 import type { ApiResponse } from '@better-stack-monorepo/common'
 
 /**
@@ -12,17 +12,19 @@ import type { ApiResponse } from '@better-stack-monorepo/common'
  * networks throw (ApiError) — HTTP and validation failures arrive as
  * envelope errors, like on the web.
  */
-export async function apiFetch<T>(path: string, init?: RequestInit): Promise<ApiResponse<T>> {
-  const cookie = authClient.getCookie()
+export async function apiFetch<T>(
+  path: string,
+  init?: RequestInit
+): Promise<ApiResponse<T>> {
+  const cookie = await authClient.getCookie()
+  const headers = new Headers(init?.headers)
+  if (cookie) headers.set('Cookie', cookie)
 
   let response: Response
   try {
     response = await fetch(`${env.apiUrl}${path}`, {
       ...init,
-      headers: {
-        ...(init?.headers ?? {}),
-        ...(cookie ? { Cookie: cookie } : {}),
-      },
+      headers,
       // Cookies are set explicitly above; let the OS handle the rest.
       credentials: 'omit',
     })
@@ -37,7 +39,10 @@ export async function apiFetch<T>(path: string, init?: RequestInit): Promise<Api
   const envelope = parseEnvelope<T>(body)
 
   if (!response.ok && !envelope.error) {
-    return { data: null, error: `Request failed: ${response.status} ${response.statusText}` }
+    return {
+      data: null,
+      error: `Request failed: ${response.status} ${response.statusText}`,
+    }
   }
 
   return envelope

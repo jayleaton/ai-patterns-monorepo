@@ -1,8 +1,7 @@
 import { z } from 'zod'
 
-export const updateUserSettingsSchema = z.object({
+export const updateUserSettingsSchema = z.strictObject({
   name: z.string().min(1).max(255).optional(),
-  email: z.email().optional(),
   image: z.url().optional().nullable(),
 })
 

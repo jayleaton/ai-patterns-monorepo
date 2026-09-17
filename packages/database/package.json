@@ -2,7 +2,6 @@
   "name": "@better-stack-monorepo/database",
   "version": "1.0.0",
   "description": "Database schemas and migrations",
-
   "private": true,
   "scripts": {
     "type-check": "tsc --noEmit",
@@ -21,7 +20,7 @@
     "dotenv": "^17.4.2",
     "drizzle-kit": "^0.31.10",
     "server-only": "^0.0.1",
-    "tsx": "^4.23.12",
+    "tsx": "^4.23.13",
     "typescript": "^5.9.3"
   },
   "files": [

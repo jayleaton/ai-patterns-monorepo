@@ -202,10 +202,10 @@ pnpm run dev
 - Postgres: localhost:5432
 - PGWeb (DB UI): http://localhost:5050
 
-Environment used by the web app in compose:
+The web app runs on the host. Configure `.env.local` using `.env.example`:
 
-- `DATABASE_URL=postgres://postgres:postgres@postgres:5432/better-stack?sslmode=disable`
-- `NEXT_PUBLIC_URL=http://localhost:3000`
+- `DATABASE_URL=postgres://postgres:postgres@localhost:5432/better-stack?sslmode=disable` (use `POSTGRES_PORT` if overridden)
+- `NEXT_PUBLIC_URL` is the browser-facing origin (localhost, LAN, or Tailscale as appropriate).
 
 To stop:
 
@@ -262,7 +262,7 @@ FROM_EMAIL=noreply@example.com
 DATABASE_URL=postgres://postgres:postgres@localhost:5432/better-stack?sslmode=disable
 ```
 
-For Docker Compose, you can create `.env.docker` if needed to override additional values. Compose sets `DATABASE_URL` and `NEXT_PUBLIC_URL` by default.
+Docker Compose starts only Postgres and pgweb. Configure the web app with `.env.local`; Compose does not set the web app’s `DATABASE_URL` or `NEXT_PUBLIC_URL`.
 
 ## Project Structure
 
@@ -297,3 +297,16 @@ just add your env variables to Github secrets and Railway env configuration
 ## License
 
 MIT License - see LICENSE file for details.
+
+## Template maintenance and security defaults
+
+Use Node.js 22.13+ and the pinned pnpm version (`corepack enable`, then `pnpm install --frozen-lockfile`). Expo's React and native package versions follow its SDK compatibility check; they intentionally need not match the web app. Update Better Auth and its Expo plugin together in both apps.
+
+- Set `NEXT_PUBLIC_URL` explicitly to the browser-facing origin, including for production builds. `INTERNAL_URL` optionally selects the server-to-server fetch origin. Development still binds `0.0.0.0:3000`; this machine's LAN and Tailscale hosts are discovered automatically. Add custom hosts through `DEV_ALLOWED_ORIGINS`, rather than broad domain wildcards.
+- Docker Postgres and pgweb bind to loopback only, using `POSTGRES_PORT` and `PGWEB_PORT` when configured. They use development credentials and are not public services. Mobile devices use the web API, not Postgres.
+- `FROM_EMAIL` is a complete sender address, such as `noreply@example.com`, on a verified Resend domain. Delivery errors fail the auth email operation instead of reporting success.
+- The example profile PATCH endpoints accept only `name` and `image`; `image: null` clears the image. Email and verification status are auth-owned fields. To add email changes, implement Better Auth's verified change-email flow, not a direct profile update.
+- Session cookie caching is disabled so server-side revocation takes effect on the next request. Authenticated core responses use `Cache-Control: private, no-store`.
+- Run `pnpm db:migrate` against your local sandbox to install the auth lookup indexes. Apply migrations to a hosted database only as part of your deployment process.
+
+See [the security and performance audit](docs/security-audit.md) for verified fixes, validation, and remaining upstream advisories. `pnpm audit` may report tooling vulnerabilities even when the app's checks pass; review the affected call path before forcing a dependency override.

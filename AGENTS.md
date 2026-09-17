@@ -34,21 +34,11 @@ One workspace is never the whole story. `apps/web-app`, `apps/mobile-app`, `pack
 
 The rest of this document is meant to help you navigate the codebase and make changes effectively. Think of these instructions less as "hard rules", more as "good defaults". The developer's preferences should be able to override anything here.
 
-## Shared terminology
+## Project context
 
-We need to be on the same page with terminology. When communicating, use this language:
+Read root [CONTEXT.md](CONTEXT.md) at the start of every task, before interpreting project terms or planning changes. Re-read it after a context reset or when switching tasks. It is the shared reference for team language, active bugs/features, and critical memories; architecture and workflow rules remain in this file.
 
-- **you** means the agent reading this file and changing this template.
-- **we, us, and maintainers** mean the people building this template. These are who you are talking to now.
-- **user** or **developer** means the person who cloned this template and directs coding agents.
-- **app** means a product surface: the Next.js website in `apps/web-app`, or the Expo mobile app in `apps/mobile-app`. Say **web app** or **mobile app** when you need to be specific.
-- **packages** mean the shared workspaces: `packages/database` (schema + repositories) and `packages/common` (shared config and types).
-- **schema** means a Drizzle table definition in `packages/database/src/schemas.ts`.
-- **repository** means the data-access layer over Drizzle, in `packages/database/src/repositories/`.
-- **service** means business logic, in `apps/web-app/lib/services/`.
-- **validator** means a Zod schema in `apps/web-app/lib/validators/`.
-- **server action** means a function in `apps/web-app/actions/` — the only client-triggered path into the API layer.
-- **routes config** means `AppRoutes`, `ApiRoutes`, and feature flags in `apps/web-app/lib/config/featureToggles.ts`.
+Update `CONTEXT.md` when work changes shared terminology, confirms an issue that affects other tasks, or reveals a recurring pitfall. Remove resolved entries once the fix or required deployment is verified. Keep its three sections concise; link to detailed issues or docs instead of adding a task diary.
 
 ## The three ways to hurt yourself
 

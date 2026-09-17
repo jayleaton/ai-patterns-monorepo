@@ -1,6 +1,6 @@
 import createNextIntlPlugin from 'next-intl/plugin'
 import type { NextConfig } from 'next'
-import { getAllowedDevOrigins } from './lib/config/networkAccess'
+import { getAllowedDevOrigins } from './network.config'
 
 const withNextIntl = createNextIntlPlugin('./lib/i18n/config.ts')
 
@@ -14,7 +14,8 @@ const nextConfig: NextConfig = {
     ],
   },
   output: 'standalone',
-  allowedDevOrigins: getAllowedDevOrigins(),
+  allowedDevOrigins:
+    process.env.NODE_ENV === 'production' ? undefined : getAllowedDevOrigins(),
   transpilePackages: ['@better-stack-monorepo/database'],
   // `next dev` otherwise writes (and appends into) AGENTS.md / CLAUDE.md
   // whenever it detects an AI agent running it. This repo maintains those
